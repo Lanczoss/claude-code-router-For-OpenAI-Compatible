@@ -77,16 +77,17 @@ ccr code
   "API_TIMEOUT_MS": 600000,
   "Providers": [
     {
-      "name": "deepseek",
-      "api_base_url": "https://api.deepseek.com/chat/completions",
-      "api_key": "$DEEPSEEK_API_KEY",
-      "models": ["deepseek-chat", "deepseek-reasoner"],
-      "transformer": { "use": ["deepseek"] }
+      "name": "qwen",
+      "api_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "api_key": "$QWEN_API_KEY",
+      "models": ["qwen-max-latest"],
+      "transformer": {
+        "use": ["OpenAI", "enhancetool"]
+      }
     }
   ],
   "Router": {
-    "default": "deepseek,deepseek-chat",
-    "think": "deepseek,deepseek-reasoner"
+    "default": "qwen,qwen-max-latest"
   }
 }
 ```
