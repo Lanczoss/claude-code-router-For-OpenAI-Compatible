@@ -68,6 +68,36 @@ CCR 提供了一个包装命令，会自动为你配置好环境变量：
 ccr code
 ```
 
+## ⚙️ 配置说明 (`config.json`)
+
+虽然推荐使用 Web UI 进行配置，但你也可以手动编辑 `~/.claude-code-router/config.json` 文件。
+
+```json
+{
+  "API_TIMEOUT_MS": 600000,
+  "Providers": [
+    {
+      "name": "deepseek",
+      "api_base_url": "https://api.deepseek.com/chat/completions",
+      "api_key": "$DEEPSEEK_API_KEY",
+      "models": ["deepseek-chat", "deepseek-reasoner"],
+      "transformer": { "use": ["deepseek"] }
+    }
+  ],
+  "Router": {
+    "default": "deepseek,deepseek-chat",
+    "think": "deepseek,deepseek-reasoner"
+  }
+}
+```
+
+### 核心概念
+- **环境变量**: 配置文件支持插值（例如 `"api_key": "$MY_KEY"`），方便安全地管理密钥。
+- **Transformer**: 中间件系统，用于适配不同供应商的特殊格式：
+  - `OpenAI`: 统一角色名称（如将 `developer` 转换为 `system`），优化工具调用名称的映射，并自动提取 **Qwen 思维链** 到 `reasoning_content`。
+  - `enhancetool`: 自动修复 LLM 返回的异常 JSON 工具参数，并对 `Edit` 工具进行参数清洗（剔除冗余字段），显著提升不同模型下的工具调用稳定性。
+- **场景化路由**: 根据任务类型自动分配模型，例如常规对话用 `default`，复杂计划用 `think`。
+
 ## 🛠️ 高级特性
 
 ### 动态路由
@@ -86,7 +116,7 @@ ccr install deepseek-v3
 
 CCR 兼容任何 OpenAI 格式的端点，包括但不限于：
 - **OpenRouter** (全模型聚合器)
-- **DeepSeek** (高性能、低成本)
+- **DeepSeek & Qwen** (高性能、低成本)
 - **SiliconFlow (硅基流动) / 火山引擎 / 通义千问**
 - **本地模型** (Ollama, vLLM, LM Studio)
 - **Groq / Cerebras** (极致推理速度)

@@ -68,6 +68,36 @@ CCR provides a wrapper command that automatically configures the environment for
 ccr code
 ```
 
+## ⚙️ Configuration (`config.json`)
+
+While the Web UI is recommended for most users, you can manually manage your configuration at `~/.claude-code-router/config.json`.
+
+```json
+{
+  "API_TIMEOUT_MS": 600000,
+  "Providers": [
+    {
+      "name": "deepseek",
+      "api_base_url": "https://api.deepseek.com/chat/completions",
+      "api_key": "$DEEPSEEK_API_KEY",
+      "models": ["deepseek-chat", "deepseek-reasoner"],
+      "transformer": { "use": ["deepseek"] }
+    }
+  ],
+  "Router": {
+    "default": "deepseek,deepseek-chat",
+    "think": "deepseek,deepseek-reasoner"
+  }
+}
+```
+
+### Key Concepts
+- **Environment Variables**: Supports interpolation in the config file (e.g., `"api_key": "$MY_KEY"`).
+- **Transformers**: Middleware that adapts payloads for specific providers:
+  - `OpenAI`: Standardizes roles (e.g., `developer` to `system`), maps tool names for better model compatibility, and extracts **Qwen thinking blocks** into `reasoning_content`.
+  - `enhancetool`: Repairs malformed JSON in tool arguments and sanitizes the `Edit` tool by removing redundant fields, ensuring stability across different models.
+- **Scoped Routing**: Automatically use different models for standard chat (`default`) vs. complex planning (`think`).
+
 ## 🛠️ Advanced Features
 
 ### Dynamic Routing
@@ -86,7 +116,7 @@ ccr install deepseek-v3
 
 CCR works with any OpenAI-compatible endpoint, including but not limited to:
 - **OpenRouter** (Aggregator for all top models)
-- **DeepSeek** (High performance, low cost)
+- **DeepSeek & Qwen** (High performance, low cost)
 - **SiliconFlow / Volcengine / DashScope**
 - **Local Models** (Ollama, vLLM, LM Studio)
 - **Groq / Cerebras** (Ultra-fast inference)
